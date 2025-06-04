@@ -191,14 +191,37 @@
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             border-radius: 4px;
             transition: width 0.1s ease;
-        }
-
-        .playlist {
+        }        .playlist {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        #playlistContainer {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* Style personnalisé pour la scrollbar */
+        #playlistContainer::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #playlistContainer::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        #playlistContainer::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        #playlistContainer::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
         }
 
         .playlist h2 {
@@ -296,13 +319,77 @@
             border-radius: 10px;
             font-size: 0.9em;
             color: rgba(255,255,255,0.8);
-        }
-
-        .no-results {
+        }        .no-results {
             text-align: center;
             padding: 40px 20px;
             color: rgba(255,255,255,0.6);
             font-style: italic;
+        }
+
+        /* Styles pour les éléments de la playlist */
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .track-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .track-item.active {
+            background: rgba(76,175,80,0.2);
+            border-color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76,175,80,0.3);
+        }
+
+        .track-item img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            margin-right: 15px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .track-details {
+            flex: 1;
+        }
+
+        .track-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1em;
+            color: white;
+            font-weight: 600;
+        }
+
+        .track-details p {
+            margin: 2px 0;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9em;
+        }
+
+        .track-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            background: rgba(76,175,80,0.2);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            border: 1px solid rgba(76,175,80,0.3);
         }
 
         .status {
@@ -429,9 +516,7 @@
             font-size: 0.9em;
             opacity: 0.7;
             font-style: italic;
-        }
-
-        @media (max-width: 768px) {
+        }        @media (max-width: 768px) {
             .control-buttons {
                 flex-direction: column;
             }
@@ -462,6 +547,29 @@
             
             .interaction-description {
                 font-size: 1.1em;
+            }
+
+            .track-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .track-item img {
+                margin: 0 0 10px 0;
+            }
+
+            .playlist-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .search-container {
+                min-width: auto;
+            }
+
+            .shuffle-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -538,8 +646,8 @@
                 <button class="btn btn-danger" id="stopBtn">⏹️ Stop</button>
             </div>            <div class="volume-control">
                 <span>🔊 Volume:</span>
-                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
-                <span id="volumeValue">100%</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="10">
+                <span id="volumeValue">10%</span>
                 <div class="dj-audio-indicator" id="djAudioIndicator" style="display: none;">
                     <span>🎧 DJ</span>
                     <div class="audio-wave"></div>
@@ -553,7 +661,7 @@
         <div class="playlist">
             <h2>📀 Playlist</h2>            <div class="playlist-controls">
                 <div class="search-container">
-                    <input type="text" id="trackSearch" class="search-input" placeholder="🔍 Rechercher un titre, artiste ou genre...">
+                    <input type="text" id="trackSearch" class="search-input" placeholder="🔍 Rechercher un titre, artiste, genre, tag ou description...">
                     <button class="search-clear" id="searchClear">✕</button>
                 </div>
                 <button class="shuffle-btn" id="shuffleBtn">
@@ -578,7 +686,7 @@
         let currentState = null;
         let progressInterval = null;
         let djAudioPlayer = document.getElementById('djAudioPlayer');
-        let djVolume = 1.0; // Volume personnel du DJ
+        let djVolume = 0.1; // Volume personnel du DJ
         
         // Audio activation system for browser autoplay compliance
         let audioEnabled = false;
@@ -1203,19 +1311,28 @@
             }, 3000);
         }        // Fonction de recherche
         const searchInput = document.getElementById('trackSearch');
-        const searchClear = document.getElementById('searchClear');
-
-        searchInput.addEventListener('input', () => {
+        const searchClear = document.getElementById('searchClear');        searchInput.addEventListener('input', () => {
             const query = searchInput.value.trim().toLowerCase();
             const tracks = Array.from(document.querySelectorAll('.track-item'));
             let visibleCount = 0;
 
             tracks.forEach(track => {
                 const title = track.querySelector('h4').textContent.toLowerCase();
-                const artist = track.querySelector('p').textContent.toLowerCase();
-                const genre = track.querySelector('p').textContent.toLowerCase();
+                const paragraphs = track.querySelectorAll('p');
+                const artist = paragraphs[0] ? paragraphs[0].textContent.toLowerCase() : '';
+                const genre = paragraphs[1] ? paragraphs[1].textContent.toLowerCase() : '';
+                const description = paragraphs[2] ? paragraphs[2].textContent.toLowerCase() : '';
+                
+                // Récupérer les tags
+                const tagElements = track.querySelectorAll('.tag');
+                const tags = Array.from(tagElements).map(tag => tag.textContent.toLowerCase()).join(' ');
 
-                if (title.includes(query) || artist.includes(query) || genre.includes(query)) {
+                // Recherche dans tous les champs : titre, artiste, genre, description et tags
+                if (title.includes(query) || 
+                    artist.includes(query) || 
+                    genre.includes(query) || 
+                    description.includes(query) ||
+                    tags.includes(query)) {
                     track.style.display = 'flex';
                     visibleCount++;
                 } else {

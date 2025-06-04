@@ -1,46 +1,46 @@
 [  {
     "id": "berlin-dream",
     "title": "Berlin Dream",
-    "artist": "Unminus",
+    "artist": "housefrau.me",
     "filename": "Berlin Dream - Unminus.com.mp3",
     "duration": 362.19,
-    "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop",
-    "source": "https://unminus.com",
-    "genre": "Electronic",
+    "image": "https://cdn.prod.website-files.com/64207062db2e060679d17ee2/64207671a2bd1e66df4d65ce_artworks-000601153642-8s9bv5-t3000x3000-p-2000.webp",
+    "source": "https://www.unminus.com",
+    "genre": "Calm",
     "description": "Une mélodie électronique inspirée de Berlin",
-    "tags": ["electronic", "ambient", "chill"]
+    "tags": ["Lounge", "Chill"]
   },  {
     "id": "open-minded",
     "title": "Open Minded",
     "artist": "Kit Wheston",
     "filename": "Open Minded - Kit Wheston _ Unminus.mp3",
     "duration": 166.06,
-    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
-    "source": "https://unminus.com",
-    "genre": "Indie",
+    "image": "https://cdn.prod.website-files.com/64207062db2e060679d17ee2/6420766f938268bad974063d_artworks-hicGDE23gNJtR6aT-JpG9qw-t3000x3000-p-2000.webp",
+    "source": "https://www.unminus.com",
+    "genre": "Calm",
     "description": "Un morceau indie ouvert d'esprit",
-    "tags": ["indie", "alternative", "upbeat"]
+    "tags": ["Lo-Fi", "Chill", "Melancholy"]
   },  {
     "id": "tea-coldise",
     "title": "Tea",
     "artist": "Coldise",
     "filename": "Tea by Coldise _ Unminus.mp3",
     "duration": 181.97,
-    "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=300&fit=crop",
-    "source": "https://unminus.com",
+    "image": "https://cdn.prod.website-files.com/64207062db2e060679d17ee2/6420766fae66abbd84ee6970_artworks-QHbT72p690kphBR1-U840FA-t3000x3000-p-2000.webp",
+    "source": "https://www.unminus.com",
     "genre": "Chill",
     "description": "Une ambiance relaxante comme un thé chaud",
-    "tags": ["chill", "relaxing", "ambient"]
+    "tags": ["Chill", "Lo-Fi"]
   },  {
     "id": "they-say",
     "title": "They Say",
-    "artist": "Unminus",
+    "artist": "Pipo & Wowa",
     "filename": "They Say _ unminus.com.mp3",
     "duration": 156.58,
-    "image": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop",
-    "source": "https://unminus.com",
-    "genre": "Pop",
+    "image": "https://cdn.prod.website-files.com/64207062db2e060679d17ee2/64207674885ad990840ca3bd_artworks-000568737656-coyygd-t3000x3000-p-2000.webp",
+    "source": "https://www.unminus.com",
+    "genre": "Calm",
     "description": "Un titre pop moderne et accrocheur",
-    "tags": ["pop", "modern", "catchy"]
+    "tags": ["Guitar", "Relax", "Chill"]
   }
 ]
