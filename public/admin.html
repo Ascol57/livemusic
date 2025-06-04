@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Admin Dashboard - Radio Live Music</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .card h3 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #3498db;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            font-weight: 500;
+            color: #bdc3c7;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2ecc71;
+        }
+
+        .stat-value.warning {
+            color: #f39c12;
+        }
+
+        .stat-value.danger {
+            color: #e74c3c;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .history-table th {
+            background: rgba(255,255,255,0.1);
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .history-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .status-online {
+            color: #2ecc71;
+        }
+
+        .status-offline {
+            color: #e74c3c;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #34495e;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle.active {
+            background: #2ecc71;
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle.active::after {
+            transform: translateX(30px);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .history-table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Admin Dashboard</h1>
+            <p>Statistiques et monitoring de la radio Live Music</p>
+        </div>
+
+        <div class="auto-refresh">
+            <label>Actualisation automatique:</label>
+            <div class="toggle" id="autoRefreshToggle"></div>
+            <span id="refreshStatus">Désactivée</span>
+        </div>
+
+        <button class="refresh-btn" onclick="loadAllData()">🔄 Actualiser maintenant</button>
+
+        <div class="dashboard-grid">
+            <!-- Statistiques générales -->
+            <div class="card">
+                <h3>📈 Statistiques générales</h3>
+                <div class="stat-row">
+                    <span class="stat-label">👥 Auditeurs en ligne</span>
+                    <span class="stat-value" id="currentListeners">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🏆 Pic d'auditeurs</span>
+                    <span class="stat-value" id="peakListeners">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎵 Morceaux joués</span>
+                    <span class="stat-value" id="totalTracksPlayed">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⏱️ Temps de diffusion</span>
+                    <span class="stat-value" id="uptime">0s</span>
+                </div>
+            </div>
+
+            <!-- État actuel de la radio -->
+            <div class="card">
+                <h3>🎛️ État actuel</h3>
+                <div class="stat-row">
+                    <span class="stat-label">🎶 Statut</span>
+                    <span class="stat-value" id="radioStatus">En attente</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎤 Morceau actuel</span>
+                    <span class="stat-value" id="currentTrack">Aucun</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎨 Artiste</span>
+                    <span class="stat-value" id="currentArtist">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🔊 Volume</span>
+                    <span class="stat-value" id="currentVolume">100%</span>
+                </div>
+            </div>
+
+            <!-- Informations playlist -->
+            <div class="card">
+                <h3>📀 Playlist</h3>
+                <div class="stat-row">
+                    <span class="stat-label">📚 Nombre de morceaux</span>
+                    <span class="stat-value" id="playlistCount">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⏰ Durée totale estimée</span>
+                    <span class="stat-value" id="totalDuration">0 min</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎭 Genres disponibles</span>
+                    <span class="stat-value" id="genreCount">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique des morceaux -->
+        <div class="card">
+            <h3>📜 Historique récent</h3>
+            <div style="overflow-x: auto;">
+                <table class="history-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Heure</th>
+                            <th>Morceau</th>
+                            <th>Artiste</th>
+                            <th>Genre</th>
+                            <th>Auditeurs</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        <tr>
+                            <td colspan="5">Chargement...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval = null;
+        let isAutoRefresh = false;
+
+        // Éléments DOM
+        const autoRefreshToggle = document.getElementById('autoRefreshToggle');
+        const refreshStatus = document.getElementById('refreshStatus');
+
+        // Toggle auto-refresh
+        autoRefreshToggle.addEventListener('click', () => {
+            isAutoRefresh = !isAutoRefresh;
+            autoRefreshToggle.classList.toggle('active', isAutoRefresh);
+            
+            if (isAutoRefresh) {
+                refreshStatus.textContent = 'Activée (30s)';
+                autoRefreshInterval = setInterval(loadAllData, 30000);
+                loadAllData(); // Charger immédiatement
+            } else {
+                refreshStatus.textContent = 'Désactivée';
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        });
+
+        // Charger toutes les données
+        async function loadAllData() {
+            await Promise.all([
+                loadStats(),
+                loadRadioState(),
+                loadPlaylistInfo(),
+                loadHistory()
+            ]);
+        }
+
+        // Charger les statistiques
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                document.getElementById('currentListeners').textContent = stats.currentListeners;
+                document.getElementById('peakListeners').textContent = stats.peakListeners;
+                document.getElementById('totalTracksPlayed').textContent = stats.totalTracksPlayed;
+                document.getElementById('uptime').textContent = stats.uptimeFormatted || '0s';
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // Charger l'état actuel de la radio
+        async function loadRadioState() {
+            try {
+                const response = await fetch('/api/state');
+                const state = await response.json();
+                
+                const statusEl = document.getElementById('radioStatus');
+                const trackEl = document.getElementById('currentTrack');
+                const artistEl = document.getElementById('currentArtist');
+                const volumeEl = document.getElementById('currentVolume');
+                
+                if (state.isPlaying && state.currentTrack) {
+                    statusEl.textContent = '🎵 En lecture';
+                    statusEl.className = 'stat-value status-online';
+                    trackEl.textContent = state.currentTrack.title;
+                    artistEl.textContent = state.currentTrack.artist;
+                } else {
+                    statusEl.textContent = '⏸️ En pause';
+                    statusEl.className = 'stat-value warning';
+                    trackEl.textContent = 'Aucun';
+                    artistEl.textContent = '-';
+                }
+                
+                volumeEl.textContent = Math.round(state.volume * 100) + '%';
+            } catch (error) {
+                console.error('Erreur chargement état:', error);
+            }
+        }
+
+        // Charger les informations de la playlist
+        async function loadPlaylistInfo() {
+            try {
+                const response = await fetch('/api/playlist');
+                const playlist = await response.json();
+                
+                document.getElementById('playlistCount').textContent = playlist.length;
+                
+                // Calculer la durée totale estimée (3 min par morceau par défaut)
+                const totalMinutes = playlist.length * 3;
+                document.getElementById('totalDuration').textContent = `${totalMinutes} min`;
+                
+                // Compter les genres uniques
+                const genres = [...new Set(playlist.map(track => track.genre))];
+                document.getElementById('genreCount').textContent = genres.length;
+            } catch (error) {
+                console.error('Erreur chargement playlist:', error);
+            }
+        }
+
+        // Charger l'historique
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/history');
+                const history = await response.json();
+                
+                const tbody = document.getElementById('historyBody');
+                
+                if (history.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5">Aucun historique disponible</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = history.slice(-10).reverse().map(entry => {
+                    const time = new Date(entry.startedAt).toLocaleTimeString('fr-FR');
+                    return `
+                        <tr>
+                            <td>${time}</td>
+                            <td>${entry.track.title}</td>
+                            <td>${entry.track.artist}</td>
+                            <td>${entry.track.genre}</td>
+                            <td>${entry.listeners}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Erreur chargement historique:', error);
+                document.getElementById('historyBody').innerHTML = 
+                    '<tr><td colspan="5">Erreur de chargement</td></tr>';
+            }
+        }
+
+        // Charger les données au démarrage
+        loadAllData();
+
+        // Mise à jour de l'heure toutes les secondes
+        setInterval(() => {
+            const now = new Date();
+            document.title = `📊 Admin Dashboard - ${now.toLocaleTimeString('fr-FR')}`;
+        }, 1000);
+    </script>
+</body>
+</html>

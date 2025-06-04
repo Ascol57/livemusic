@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎛️ Interface DJ - Radio Live Music</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .current-track {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .track-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .track-info h3 {
+            margin-bottom: 5px;
+            font-size: 1.3em;
+        }
+
+        .track-info p {
+            opacity: 0.8;
+            margin: 2px 0;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dj-audio-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(76,175,80,0.2);
+            border: 1px solid #4CAF50;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .audio-wave {
+            width: 4px;
+            height: 12px;
+            background: #4CAF50;
+            margin: 0 1px;
+            border-radius: 2px;
+            animation: wave 1.5s ease-in-out infinite;
+        }
+
+        .audio-wave:nth-child(2) { animation-delay: 0.1s; }
+        .audio-wave:nth-child(3) { animation-delay: 0.2s; }
+        .audio-wave:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes wave {
+            0%, 100% { height: 4px; }
+            50% { height: 12px; }
+        }
+
+        .dj-audio-indicator.paused .audio-wave {
+            animation: none;
+            height: 4px;
+            opacity: 0.5;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin: 10px 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .playlist {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .playlist h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .playlist-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .search-input:focus {
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 0 2px rgba(76,175,80,0.5);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: none;
+        }
+
+        .search-clear:hover {
+            color: white;
+        }
+
+        .shuffle-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .shuffle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(156,39,176,0.3);
+        }
+
+        .shuffle-btn:active {
+            transform: translateY(0);
+        }
+
+        .playlist-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.6);
+            font-style: italic;
+        }
+
+        .status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .status.connected {
+            background: #4CAF50;
+            color: white;
+        }        .status.disconnected {
+            background: #f44336;
+            color: white;
+        }
+
+        .stats-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 250px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 8px 0;
+        }
+
+        .stat-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4CAF50;
+        }        /* User interaction overlay for audio activation */
+        .user-interaction-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .interaction-content {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .interaction-title {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .interaction-description {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .enable-audio-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(76,175,80,0.3);
+            font-weight: bold;
+        }
+
+        .enable-audio-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(76,175,80,0.4);
+        }
+
+        .enable-audio-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .browser-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            opacity: 0.7;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .stats-panel {
+                position: static;
+                margin-bottom: 20px;
+                min-width: auto;
+            }
+            
+            .current-track {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .track-image {
+                margin: 0 0 15px 0;
+            }
+            
+            .interaction-content {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+            
+            .interaction-title {
+                font-size: 2em;
+            }
+            
+            .interaction-description {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- User interaction overlay for browser autoplay compliance -->
+    <div class="user-interaction-overlay" id="userInteractionOverlay">
+        <div class="interaction-content">
+            <div class="interaction-title">🎛️ Interface DJ</div>
+            <div class="interaction-description">
+                Pour entendre l'audio en tant que DJ, veuillez activer la lecture audio.<br>
+                Cette étape est nécessaire pour contourner les restrictions de lecture automatique des navigateurs.
+            </div>
+            <button class="enable-audio-btn" id="enableAudioBtn">
+                🔊 Activer l'audio DJ
+            </button>
+            <div class="browser-info">
+                Requis par les politiques de sécurité des navigateurs modernes
+            </div>
+        </div>
+    </div>
+
+    <div class="status" id="status">🔄 Connexion...</div>
+    
+    <!-- Section des statistiques -->
+    <div class="stats-panel" id="statsPanel" style="display: none;">
+        <div class="stat-item">
+            <span class="stat-label">👥 Auditeurs en ligne</span>
+            <span class="stat-value" id="listenersCount">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">📈 Pic d'auditeurs</span>
+            <span class="stat-value" id="peakListeners">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">🎵 Morceaux joués</span>
+            <span class="stat-value" id="tracksPlayed">0</span>
+        </div>        <div class="stat-item">
+            <span class="stat-label">⏱️ Temps de diffusion</span>
+            <span class="stat-value" id="uptime">0s</span>
+        </div>        <div class="stat-item">
+            <span class="stat-label">🔄 Avancement auto</span>
+            <span class="stat-value" id="autoAdvance">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="autoAdvanceToggle" checked style="margin: 0;">
+                    <span id="autoAdvanceStatus">✅ Activé</span>
+                </label>
+            </span>
+        </div>
+    </div>
+      <div class="container">
+        <div class="header">
+            <h1>🎛️ Interface DJ</h1>
+            <p>Contrôlez la radio et synchronisez la musique pour tous les auditeurs</p>
+        </div>
+
+        <div class="controls">
+            <div class="current-track" id="currentTrack" style="display: none;">
+                <img id="currentImage" class="track-image" src="" alt="Album">
+                <div class="track-info">
+                    <h3 id="currentTitle">Aucun morceau</h3>
+                    <p id="currentArtist">-</p>
+                    <p id="currentGenre">-</p>
+                </div>
+            </div>
+
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="playBtn">▶️ Play</button>
+                <button class="btn btn-secondary" id="pauseBtn">⏸️ Pause</button>
+                <button class="btn btn-danger" id="stopBtn">⏹️ Stop</button>
+            </div>            <div class="volume-control">
+                <span>🔊 Volume:</span>
+                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+                <span id="volumeValue">100%</span>
+                <div class="dj-audio-indicator" id="djAudioIndicator" style="display: none;">
+                    <span>🎧 DJ</span>
+                    <div class="audio-wave"></div>
+                    <div class="audio-wave"></div>
+                    <div class="audio-wave"></div>
+                    <div class="audio-wave"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="playlist">
+            <h2>📀 Playlist</h2>            <div class="playlist-controls">
+                <div class="search-container">
+                    <input type="text" id="trackSearch" class="search-input" placeholder="🔍 Rechercher un titre, artiste ou genre...">
+                    <button class="search-clear" id="searchClear">✕</button>
+                </div>
+                <button class="shuffle-btn" id="shuffleBtn">
+                    🔀 Mélanger
+                </button>
+            </div>
+            
+            <!-- Informations de playlist -->
+            <div class="playlist-info" id="playlistInfo">
+                <span id="playlistStats">Chargement...</span>
+                <span id="searchResults" style="display: none;"></span>
+            </div>
+            <div id="playlistContainer">
+                <p>Chargement de la playlist...</p>
+            </div>        </div>
+    </div>
+
+    <!-- Audio element pour que le DJ entende la musique -->
+    <audio id="djAudioPlayer" style="display: none;"></audio>
+
+    <script src="/socket.io/socket.io.js"></script>    <script>        const socket = io();
+        let currentState = null;
+        let progressInterval = null;
+        let djAudioPlayer = document.getElementById('djAudioPlayer');
+        let djVolume = 1.0; // Volume personnel du DJ
+        
+        // Audio activation system for browser autoplay compliance
+        let audioEnabled = false;
+        let pendingPlay = null;
+        const userInteractionOverlay = document.getElementById('userInteractionOverlay');
+        const enableAudioBtn = document.getElementById('enableAudioBtn');        // Enable audio function
+        function enableAudio() {
+            console.log('🎵 Activation de l\'audio DJ...');
+            
+            // Play a silent audio to unlock the audio context
+            djAudioPlayer.volume = 0;
+            djAudioPlayer.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA==';
+            
+            djAudioPlayer.play().then(() => {
+                console.log('✅ Audio DJ débloqué avec succès');
+                audioEnabled = true;
+                djAudioPlayer.volume = djVolume;
+                
+                // Hide overlay
+                userInteractionOverlay.style.display = 'none';
+                
+                // If there's a pending play, execute it now
+                if (pendingPlay) {
+                    console.log('🎵 Exécution de la lecture en attente...');
+                    const { track, startTime, timestamp } = pendingPlay;
+                    
+                    if (track && typeof track === 'object') {
+                        // Direct track object - play immediately
+                        playDJAudio(track, startTime || 0, timestamp || Date.now());
+                    } else if (typeof track === 'string') {
+                        // Track ID - trigger normal play
+                        playTrack(track, startTime || 0);
+                    }
+                    
+                    pendingPlay = null;
+                }
+            }).catch(error => {
+                console.error('❌ Erreur lors du débloquage audio:', error);
+                // Retry after a short delay
+                setTimeout(() => {
+                    enableAudio();
+                }, 1000);
+            });
+        }
+
+        // Event listener for audio activation button
+        enableAudioBtn.addEventListener('click', enableAudio);// Éléments DOM
+        const statusEl = document.getElementById('status');
+        const statsPanel = document.getElementById('statsPanel');
+        const listenersCountEl = document.getElementById('listenersCount');
+        const peakListenersEl = document.getElementById('peakListeners');
+        const tracksPlayedEl = document.getElementById('tracksPlayed');
+        const uptimeEl = document.getElementById('uptime');
+        const currentTrackEl = document.getElementById('currentTrack');
+        const currentImageEl = document.getElementById('currentImage');
+        const currentTitleEl = document.getElementById('currentTitle');
+        const currentArtistEl = document.getElementById('currentArtist');
+        const currentGenreEl = document.getElementById('currentGenre');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');        const playlistContainer = document.getElementById('playlistContainer');
+        const djAudioIndicator = document.getElementById('djAudioIndicator');// Connexion WebSocket
+        socket.on('connect', () => {
+            statusEl.textContent = '🟢 Connecté';
+            statusEl.className = 'status connected';
+            statsPanel.style.display = 'block';
+            console.log('Connecté au serveur');
+            
+            // Charger les statistiques initiales
+            loadStats();
+            
+            // Actualiser les stats toutes les 5 secondes
+            setInterval(loadStats, 5000);
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.textContent = '🔴 Déconnecté';
+            statusEl.className = 'status disconnected';
+            statsPanel.style.display = 'none';
+            console.log('Déconnecté du serveur');
+        });
+
+        // Mise à jour du nombre d'auditeurs en temps réel
+        socket.on('listeners:count', (count) => {
+            listenersCountEl.textContent = count;
+        });
+
+        // Synchronisation de l'état
+        socket.on('radio:sync', (state) => {
+            console.log('Synchronisation:', state);
+            currentState = state;
+            updateUI();
+        });        // Événements radio
+        socket.on('radio:play', (data) => {
+            console.log('Play reçu:', data);
+            if (currentState) {
+                currentState.currentTrack = data.track;
+                currentState.isPlaying = true;
+                currentState.currentTime = data.startTime;
+                updateUI();
+                startProgressUpdate();
+                
+                // Afficher si c'est un avancement automatique
+                if (data.autoAdvanced) {
+                    console.log('🔄 Avancement automatique détecté');
+                    // Optionnel: afficher une notification visuelle
+                }
+                
+                // Faire jouer l'audio pour le DJ aussi
+                playDJAudio(data.track, data.startTime, data.timestamp);
+            }
+        });
+
+        socket.on('radio:pause', () => {
+            console.log('Pause reçu');
+            if (currentState) {
+                currentState.isPlaying = false;
+                updateUI();
+                stopProgressUpdate();
+                
+                // Pausser l'audio du DJ
+                pauseDJAudio();
+            }
+        });
+
+        socket.on('radio:stop', () => {
+            console.log('Stop reçu');
+            if (currentState) {
+                currentState.isPlaying = false;
+                currentState.currentTrack = null;
+                currentState.currentTime = 0;
+                updateUI();
+                stopProgressUpdate();
+                
+                // Arrêter l'audio du DJ
+                stopDJAudio();
+            }
+        });        socket.on('radio:seek', (data) => {
+            console.log('Seek reçu:', data);
+            if (currentState) {
+                currentState.currentTime = data.time;
+                updateUI();
+                
+                // Synchroniser l'audio du DJ
+                seekDJAudio(data.time, data.timestamp);
+            }
+        });
+
+        socket.on('radio:volume', (data) => {
+            console.log('Volume reçu:', data);
+            if (currentState) {
+                currentState.volume = data.volume;
+                volumeSlider.value = data.volume * 100;
+                volumeValue.textContent = Math.round(data.volume * 100) + '%';
+            }
+        });
+
+        // Fonctions de contrôle
+        async function playTrack(trackId, startTime = 0) {
+            try {
+                const response = await fetch('/api/play', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ trackId, startTime })
+                });
+                const result = await response.json();
+                console.log('Play response:', result);
+            } catch (error) {
+                console.error('Erreur play:', error);
+            }
+        }
+
+        async function pauseTrack() {
+            try {
+                const response = await fetch('/api/pause', { method: 'POST' });
+                const result = await response.json();
+                console.log('Pause response:', result);
+            } catch (error) {
+                console.error('Erreur pause:', error);
+            }
+        }
+
+        async function stopTrack() {
+            try {
+                const response = await fetch('/api/stop', { method: 'POST' });
+                const result = await response.json();
+                console.log('Stop response:', result);
+            } catch (error) {
+                console.error('Erreur stop:', error);
+            }
+        }
+
+        async function seekTo(time) {
+            try {
+                const response = await fetch('/api/seek', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ time })
+                });
+                const result = await response.json();
+                console.log('Seek response:', result);
+            } catch (error) {
+                console.error('Erreur seek:', error);
+            }
+        }
+
+        async function setVolume(volume) {
+            try {
+                const response = await fetch('/api/volume', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ volume: volume / 100 })
+                });
+                const result = await response.json();
+                console.log('Volume response:', result);
+            } catch (error) {
+                console.error('Erreur volume:', error);
+            }        }        // Fonctions audio pour le DJ
+        function playDJAudio(track, startTime, timestamp) {
+            if (!track) return;
+
+            // If audio is not enabled yet, store the play request
+            if (!audioEnabled) {
+                console.log('🎵 Audio non activé - mise en attente de la lecture...');
+                pendingPlay = { track, startTime, timestamp };
+                // Show overlay if hidden
+                userInteractionOverlay.style.display = 'flex';
+                return;
+            }
+
+            // Calculer le décalage de synchronisation
+            const networkDelay = Date.now() - timestamp;
+            const actualStartTime = startTime + (networkDelay / 1000);
+
+            // Charger et jouer la piste audio pour le DJ
+            djAudioPlayer.src = `/music/${encodeURIComponent(track.filename)}`;
+            djAudioPlayer.currentTime = actualStartTime;
+            djAudioPlayer.volume = djVolume;
+
+            djAudioPlayer.play().then(() => {
+                console.log('🎵 Lecture DJ démarrée:', track.title);
+                // Afficher l'indicateur audio du DJ
+                djAudioIndicator.style.display = 'flex';
+                djAudioIndicator.classList.remove('paused');
+            }).catch(error => {
+                console.error('❌ Erreur lecture audio DJ:', error);
+                // If autoplay failed, show the interaction overlay again
+                audioEnabled = false;
+                pendingPlay = { track, startTime, timestamp };
+                userInteractionOverlay.style.display = 'flex';
+            });
+        }
+
+        function pauseDJAudio() {
+            djAudioPlayer.pause();
+            djAudioIndicator.classList.add('paused');
+        }
+
+        function stopDJAudio() {
+            djAudioPlayer.pause();
+            djAudioPlayer.currentTime = 0;
+            djAudioIndicator.style.display = 'none';
+        }
+
+        function seekDJAudio(time, timestamp) {
+            if (!djAudioPlayer.src) return;
+
+            const networkDelay = Date.now() - timestamp;
+            const actualTime = time + (networkDelay / 1000);
+            
+            djAudioPlayer.currentTime = actualTime;
+        }
+
+        // Mise à jour de l'interface
+        function updateUI() {
+            if (!currentState) return;
+
+            const { currentTrack, isPlaying } = currentState;
+
+            if (currentTrack) {
+                currentTrackEl.style.display = 'flex';
+                currentImageEl.src = currentTrack.image;
+                currentTitleEl.textContent = currentTrack.title;
+                currentArtistEl.textContent = currentTrack.artist;
+                currentGenreEl.textContent = currentTrack.genre;
+
+                playBtn.textContent = isPlaying ? '⏸️ Pause' : '▶️ Play';
+                pauseBtn.disabled = !isPlaying;
+                stopBtn.disabled = false;
+            } else {
+                currentTrackEl.style.display = 'none';
+                playBtn.textContent = '▶️ Play';
+                pauseBtn.disabled = true;
+                stopBtn.disabled = true;
+            }
+
+            updateProgress();
+            updatePlaylistUI();
+        }        function updateProgress() {
+            if (!currentState || !currentState.currentTrack) {
+                progressFill.style.width = '0%';
+                return;
+            }
+
+            // Utiliser l'audio du DJ comme référence si disponible
+            let currentTime = currentState.currentTime;
+            if (djAudioPlayer.src && djAudioPlayer.duration) {
+                currentTime = djAudioPlayer.currentTime;
+                const duration = djAudioPlayer.duration;
+                const progress = Math.min((currentTime / duration) * 100, 100);
+                progressFill.style.width = progress + '%';
+            } else {
+                // Fallback: durée estimée de 3 minutes
+                const duration = 180;
+                const progress = Math.min((currentTime / duration) * 100, 100);
+                progressFill.style.width = progress + '%';
+            }
+        }
+
+        function startProgressUpdate() {
+            stopProgressUpdate();
+            progressInterval = setInterval(() => {
+                if (currentState && currentState.isPlaying) {
+                    // Synchroniser avec l'audio du DJ si possible
+                    if (djAudioPlayer.src && djAudioPlayer.currentTime) {
+                        currentState.currentTime = djAudioPlayer.currentTime;
+                    } else {
+                        currentState.currentTime += 0.1;
+                    }
+                    updateProgress();
+                }
+            }, 100);
+        }
+
+        function stopProgressUpdate() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }        function updatePlaylistUI() {
+            if (!currentState || !currentState.playlist) return;
+
+            const currentTrackId = currentState.currentTrack ? currentState.currentTrack.id : null;
+            
+            playlistContainer.innerHTML = currentState.playlist.map(track => `
+                <div class="track-item ${track.id === currentTrackId ? 'active' : ''}" 
+                     onclick="handleTrackClick('${track.id}')">
+                    <img src="${track.image}" alt="${track.title}">
+                    <div class="track-details">
+                        <h4>${track.title}</h4>
+                        <p>${track.artist} • ${track.genre}</p>
+                        <p>${track.description}</p>
+                        <div class="track-tags">
+                            ${track.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Mettre à jour les statistiques de playlist
+            updatePlaylistStats();
+        }        // Handle track click with audio activation check
+        function handleTrackClick(trackId) {
+            if (!audioEnabled) {
+                // Store the track ID to play after audio activation
+                pendingPlay = { track: trackId, startTime: 0, timestamp: Date.now() };
+                userInteractionOverlay.style.display = 'flex';
+                return;
+            }
+            playTrack(trackId);
+        }
+
+        function updatePlaylistStats() {
+            if (!currentState || !currentState.playlist) return;
+
+            const totalTracks = currentState.playlist.length;
+            const genres = [...new Set(currentState.playlist.map(track => track.genre))];
+            const artists = [...new Set(currentState.playlist.map(track => track.artist))];
+
+            document.getElementById('playlistStats').textContent = 
+                `📚 ${totalTracks} morceaux • 🎭 ${genres.length} genres • 🎤 ${artists.length} artistes`;
+        }        // Event Listeners
+        playBtn.addEventListener('click', () => {
+            // If audio is not enabled and we're trying to play, show overlay
+            if (!audioEnabled && (!currentState || !currentState.isPlaying)) {
+                userInteractionOverlay.style.display = 'flex';
+                return;
+            }
+            
+            if (currentState && currentState.currentTrack) {
+                if (currentState.isPlaying) {
+                    pauseTrack();
+                } else {
+                    playTrack(currentState.currentTrack.id, currentState.currentTime);
+                }
+            }
+        });
+
+        pauseBtn.addEventListener('click', pauseTrack);
+        stopBtn.addEventListener('click', stopTrack);        volumeSlider.addEventListener('input', (e) => {
+            const volume = e.target.value;
+            volumeValue.textContent = volume + '%';
+            
+            // Mettre à jour le volume personnel du DJ
+            djVolume = volume / 100;
+            djAudioPlayer.volume = djVolume;
+            
+            // Aussi envoyer le changement de volume global
+            setVolume(volume);
+        });        progressBar.addEventListener('click', (e) => {
+            if (!currentState || !currentState.currentTrack) return;
+            
+            const rect = progressBar.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            
+            // Utiliser la vraie durée si disponible, sinon fallback 3 minutes
+            const duration = djAudioPlayer.duration || 180;
+            const newTime = duration * percentage;
+            
+            seekTo(newTime);
+        });
+
+        // Charger la playlist au démarrage
+        async function loadPlaylist() {
+            try {
+                const response = await fetch('/api/playlist');
+                const playlist = await response.json();
+                if (currentState) {
+                    currentState.playlist = playlist;
+                    updatePlaylistUI();
+                }
+            } catch (error) {
+                console.error('Erreur chargement playlist:', error);
+                playlistContainer.innerHTML = '<p>Erreur lors du chargement de la playlist</p>';
+            }
+        }        // Charger l'état initial
+        async function loadInitialState() {
+            try {
+                const response = await fetch('/api/state');
+                currentState = await response.json();
+                updateUI();
+                
+                // Si de la musique est en cours, rejoindre la lecture
+                if (currentState.isPlaying && currentState.currentTrack) {
+                    console.log('Rejoindre la lecture en cours:', currentState.currentTrack.title);
+                    playDJAudio(currentState.currentTrack, currentState.currentTime, Date.now());
+                    startProgressUpdate();
+                } else {
+                    // Hide overlay if no music is playing
+                    userInteractionOverlay.style.display = 'none';
+                    audioEnabled = true; // Allow direct control when no music is playing
+                }
+            } catch (error) {
+                console.error('Erreur chargement état:', error);
+                // Hide overlay on error
+                userInteractionOverlay.style.display = 'none';
+                audioEnabled = true;
+            }        }// Initialisation
+        loadPlaylist();
+        loadInitialState();
+
+        // Gestionnaire du toggle d'auto-avancement
+        document.getElementById('autoAdvanceToggle').addEventListener('change', (e) => {
+            autoAdvanceEnabled = e.target.checked;
+            const statusEl = document.getElementById('autoAdvanceStatus');
+            if (autoAdvanceEnabled) {
+                statusEl.textContent = '✅ Activé';
+                statusEl.style.color = '#4CAF50';
+                console.log('🔄 Avancement automatique activé');
+            } else {
+                statusEl.textContent = '❌ Désactivé';
+                statusEl.style.color = '#f44336';
+                console.log('⏸️ Avancement automatique désactivé');
+            }
+        });
+
+        // Événements audio du DJ pour améliorer la synchronisation
+        djAudioPlayer.addEventListener('timeupdate', () => {
+            if (currentState && currentState.isPlaying) {
+                updateProgress();
+            }
+        });
+
+        djAudioPlayer.addEventListener('loadedmetadata', () => {
+            console.log('Durée du morceau:', djAudioPlayer.duration);
+        });        djAudioPlayer.addEventListener('ended', () => {
+            console.log('🎵 Morceau terminé - Avancement automatique côté DJ');
+            
+            // Vérifier si l'auto-avancement est activé dans la configuration
+            if (shouldAutoAdvance()) {
+                playNextTrackInPlaylist();
+            }
+        });
+
+        djAudioPlayer.addEventListener('error', (e) => {
+            console.error('Erreur audio DJ:', e);
+        });        // Fonction pour charger les statistiques
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+                
+                peakListenersEl.textContent = stats.peakListeners;
+                tracksPlayedEl.textContent = stats.totalTracksPlayed;
+                uptimeEl.textContent = stats.uptimeFormatted || '0s';
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }        // Fonctions pour l'avancement automatique côté DJ
+        let autoAdvanceEnabled = true;
+
+        function shouldAutoAdvance() {
+            return autoAdvanceEnabled;
+        }
+
+        function getNextTrackId() {
+            if (!currentState || !currentState.playlist || !currentState.currentTrack) {
+                return null;
+            }
+
+            const currentIndex = currentState.playlist.findIndex(track => 
+                track.id === currentState.currentTrack.id
+            );
+
+            if (currentIndex === -1) return null;
+
+            // Aller au morceau suivant, ou revenir au début si on est à la fin
+            const nextIndex = (currentIndex + 1) % currentState.playlist.length;
+            return currentState.playlist[nextIndex].id;
+        }
+
+        async function playNextTrackInPlaylist() {
+            const nextTrackId = getNextTrackId();
+            
+            if (nextTrackId) {
+                const nextTrack = currentState.playlist.find(track => track.id === nextTrackId);
+                console.log(`🔄 Avancement automatique vers: ${nextTrack.title} par ${nextTrack.artist}`);
+                
+                // Jouer le morceau suivant avec une indication qu'il s'agit d'un avancement automatique
+                await playTrack(nextTrackId, 0);
+                
+                // Optionnel: Afficher une notification visuelle
+                showAutoAdvanceNotification(nextTrack);
+            } else {
+                console.log('❌ Aucun morceau suivant trouvé pour l\'avancement automatique');
+            }
+        }
+
+        function showAutoAdvanceNotification(track) {
+            // Créer une notification temporaire pour indiquer l'avancement automatique
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 120px;
+                right: 20px;
+                background: rgba(76,175,80,0.9);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 1001;
+                font-weight: bold;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>🔄</span>
+                    <div>
+                        <div>Avancement automatique</div>
+                        <div style="font-size: 0.9em; opacity: 0.9;">${track.title}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter l'animation CSS
+            if (!document.querySelector('#autoAdvanceStyles')) {
+                const styles = document.createElement('style');
+                styles.id = 'autoAdvanceStyles';
+                styles.textContent = `
+                    @keyframes slideIn {
+                        from { 
+                            transform: translateX(100%); 
+                            opacity: 0; 
+                        }
+                        to { 
+                            transform: translateX(0); 
+                            opacity: 1; 
+                        }
+                    }
+                    @keyframes slideOut {
+                        from { 
+                            transform: translateX(0); 
+                            opacity: 1; 
+                        }
+                        to { 
+                            transform: translateX(100%); 
+                            opacity: 0; 
+                        }
+                    }
+                `;
+                document.head.appendChild(styles);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer la notification après 3 secondes
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }        // Fonction de recherche
+        const searchInput = document.getElementById('trackSearch');
+        const searchClear = document.getElementById('searchClear');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim().toLowerCase();
+            const tracks = Array.from(document.querySelectorAll('.track-item'));
+            let visibleCount = 0;
+
+            tracks.forEach(track => {
+                const title = track.querySelector('h4').textContent.toLowerCase();
+                const artist = track.querySelector('p').textContent.toLowerCase();
+                const genre = track.querySelector('p').textContent.toLowerCase();
+
+                if (title.includes(query) || artist.includes(query) || genre.includes(query)) {
+                    track.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    track.style.display = 'none';
+                }
+            });
+
+            // Afficher ou cacher le bouton de suppression
+            searchClear.style.display = query ? 'block' : 'none';
+
+            // Mettre à jour les résultats de recherche
+            const searchResults = document.getElementById('searchResults');
+            if (query) {
+                searchResults.style.display = 'block';
+                searchResults.textContent = `🔍 ${visibleCount} résultat${visibleCount > 1 ? 's' : ''} trouvé${visibleCount > 1 ? 's' : ''}`;
+                
+                if (visibleCount === 0) {
+                    playlistContainer.innerHTML = '<div class="no-results">❌ Aucun morceau trouvé pour cette recherche</div>';
+                }
+            } else {
+                searchResults.style.display = 'none';
+                if (visibleCount === 0) {
+                    updatePlaylistUI(); // Restaurer la liste complète
+                }
+            }
+        });
+
+        // Effacer la recherche
+        searchClear.addEventListener('click', () => {
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            searchClear.style.display = 'none';
+            searchInput.focus();
+        });        // Fonction de shuffle
+        const shuffleBtn = document.getElementById('shuffleBtn');
+
+        shuffleBtn.addEventListener('click', () => {
+            if (!currentState || !currentState.playlist.length) return;
+
+            // Animation du bouton pendant le shuffle
+            shuffleBtn.style.transform = 'rotate(360deg)';
+            shuffleBtn.textContent = '🔄 Mélange...';
+            shuffleBtn.disabled = true;
+
+            setTimeout(() => {
+                // Sauvegarder le morceau actuel pour le garder en première position si il joue
+                const currentTrack = currentState.currentTrack;
+                let playlistCopy = [...currentState.playlist];
+
+                // Si un morceau joue, le retirer temporairement
+                if (currentTrack) {
+                    playlistCopy = playlistCopy.filter(track => track.id !== currentTrack.id);
+                }
+
+                // Mélanger la copie
+                for (let i = playlistCopy.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [playlistCopy[i], playlistCopy[j]] = [playlistCopy[j], playlistCopy[i]];
+                }
+
+                // Remettre le morceau actuel en première position si il y en a un
+                if (currentTrack) {
+                    playlistCopy.unshift(currentTrack);
+                }
+
+                // Appliquer le nouveau ordre
+                currentState.playlist = playlistCopy;
+                updatePlaylistUI();
+
+                // Restaurer le bouton
+                shuffleBtn.style.transform = 'rotate(0deg)';
+                shuffleBtn.textContent = '🔀 Mélanger';
+                shuffleBtn.disabled = false;
+
+                console.log('🔀 Playlist mélangée');
+
+                // Notification visuelle
+                showShuffleNotification();
+            }, 500);
+        });
+
+        function showShuffleNotification() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 120px;
+                right: 20px;
+                background: rgba(156,39,176,0.9);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                z-index: 1001;
+                font-weight: bold;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span>🔀</span>
+                    <div>
+                        <div>Playlist mélangée</div>
+                        <div style="font-size: 0.9em; opacity: 0.9;">Nouvel ordre aléatoire appliqué</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Supprimer la notification après 2 secondes
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+[  {
+    "id": "berlin-dream",
+    "title": "Berlin Dream",
+    "artist": "Unminus",
+    "filename": "Berlin Dream - Unminus.com.mp3",
+    "duration": 362.19,
+    "image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=300&fit=crop",
+    "source": "https://unminus.com",
+    "genre": "Electronic",
+    "description": "Une mélodie électronique inspirée de Berlin",
+    "tags": ["electronic", "ambient", "chill"]
+  },  {
+    "id": "open-minded",
+    "title": "Open Minded",
+    "artist": "Kit Wheston",
+    "filename": "Open Minded - Kit Wheston _ Unminus.mp3",
+    "duration": 166.06,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "https://unminus.com",
+    "genre": "Indie",
+    "description": "Un morceau indie ouvert d'esprit",
+    "tags": ["indie", "alternative", "upbeat"]
+  },  {
+    "id": "tea-coldise",
+    "title": "Tea",
+    "artist": "Coldise",
+    "filename": "Tea by Coldise _ Unminus.mp3",
+    "duration": 181.97,
+    "image": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=300&fit=crop",
+    "source": "https://unminus.com",
+    "genre": "Chill",
+    "description": "Une ambiance relaxante comme un thé chaud",
+    "tags": ["chill", "relaxing", "ambient"]
+  },  {
+    "id": "they-say",
+    "title": "They Say",
+    "artist": "Unminus",
+    "filename": "They Say _ unminus.com.mp3",
+    "duration": 156.58,
+    "image": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop",
+    "source": "https://unminus.com",
+    "genre": "Pop",
+    "description": "Un titre pop moderne et accrocheur",
+    "tags": ["pop", "modern", "catchy"]
+  }
+]

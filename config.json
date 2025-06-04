@@ -1,0 +1,38 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost",
+    "corsOrigins": ["*"]
+  },
+  "radio": {
+    "defaultVolume": 1.0,
+    "autoSyncTolerance": 1.0,
+    "progressUpdateInterval": 100,
+    "maxListeners": 100
+  },
+  "ui": {
+    "theme": {
+      "primaryColor": "#667eea",
+      "secondaryColor": "#764ba2",
+      "accentColor": "#4CAF50",
+      "warningColor": "#ff9800",
+      "dangerColor": "#f44336"
+    },
+    "defaultImages": {
+      "albumCover": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+      "djAvatar": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=100&h=100&fit=crop"
+    }
+  },
+  "audio": {
+    "supportedFormats": [".mp3", ".wav", ".ogg", ".m4a", ".flac"],
+    "defaultDuration": 180,
+    "crossfadeEnabled": false,
+    "crossfadeDuration": 3000
+  },  "features": {
+    "djAudioEnabled": true,
+    "chatEnabled": false,
+    "historyEnabled": true,
+    "visualizerEnabled": false,
+    "autoAdvancePlaylist": true
+  }
+}

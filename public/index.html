@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Radio Live Music - Auditeur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .player-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .track-display {
+            margin-bottom: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .track-display.visible {
+            opacity: 1;
+        }
+
+        .track-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .track-image:hover {
+            transform: scale(1.05);
+        }
+
+        .track-info h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .track-info p {
+            opacity: 0.8;
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+
+        .progress-container {
+            margin: 25px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 3px;
+            transition: width 0.1s ease;
+            width: 0%;
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.disconnected {
+            background: #f44336;
+            animation: none;
+        }        .status-indicator.paused {
+            background: #ff9800;
+            animation: none;
+        }
+
+        .listener-count {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+            opacity: 0.8;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .no-track {
+            padding: 40px;
+            opacity: 0.6;
+        }
+
+        .no-track h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .volume-control {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
+            outline: none;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            backdrop-filter: blur(5px);
+        }
+
+        @media (max-width: 768px) {
+            .player-container {
+                padding: 30px 20px;
+            }
+            
+            .track-image {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .title {
+                font-size: 1.5em;
+            }
+            
+            .track-info h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="player-container">
+        <div class="logo">🎵</div>
+        <h1 class="title">Radio Live Music</h1>
+        
+        <div class="track-display" id="trackDisplay">
+            <img id="trackImage" class="track-image" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" alt="Album">
+            <div class="track-info">
+                <h2 id="trackTitle">En attente...</h2>
+                <p id="trackArtist">Aucun morceau en cours</p>
+                <p id="trackGenre"></p>
+                <div class="tags" id="trackTags"></div>
+            </div>
+        </div>
+
+        <div class="no-track" id="noTrack" style="display: none;">
+            <h3>🔇 Aucune diffusion</h3>
+            <p>Le DJ n'a pas encore lancé de musique</p>
+        </div>
+
+        <div class="progress-container" id="progressContainer" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-display">
+                <span id="currentTime">0:00</span>
+                <span id="totalTime">3:00</span>
+            </div>
+        </div>
+
+        <div class="volume-control">
+            <span>🔊</span>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
+            <span id="volumeValue">100%</span>
+        </div>        <div class="status">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <span id="statusText">Connexion...</span>
+            <div class="listener-count" id="listenerCount" style="display: none;">
+                👥 <span id="listenerCountValue">0</span> auditeurs en ligne
+            </div>
+        </div>
+
+        <!-- Audio element pour la lecture -->
+        <audio id="audioPlayer" style="display: none;"></audio>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentState = null;
+        let audioPlayer = document.getElementById('audioPlayer');
+        let syncInterval = null;
+        let localVolume = 1.0;
+
+        // Éléments DOM
+        const trackDisplay = document.getElementById('trackDisplay');
+        const noTrack = document.getElementById('noTrack');
+        const trackImage = document.getElementById('trackImage');
+        const trackTitle = document.getElementById('trackTitle');
+        const trackArtist = document.getElementById('trackArtist');
+        const trackGenre = document.getElementById('trackGenre');
+        const trackTags = document.getElementById('trackTags');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');        const currentTime = document.getElementById('currentTime');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+        const listenerCount = document.getElementById('listenerCount');
+        const listenerCountValue = document.getElementById('listenerCountValue');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');        // Connexion WebSocket
+        socket.on('connect', () => {
+            updateStatus('connected', '🟢 Connecté à la radio');
+            listenerCount.style.display = 'block';
+            console.log('Connecté au serveur radio');
+        });
+
+        socket.on('disconnect', () => {
+            updateStatus('disconnected', '🔴 Connexion perdue');
+            listenerCount.style.display = 'none';
+            console.log('Déconnecté du serveur');
+        });
+
+        // Mise à jour du nombre d'auditeurs en temps réel
+        socket.on('listeners:count', (count) => {
+            listenerCountValue.textContent = count;
+        });
+
+        // Synchronisation de l'état
+        socket.on('radio:sync', (state) => {
+            console.log('Synchronisation reçue:', state);
+            currentState = state;
+            updateDisplay();
+        });
+
+        // Événements radio
+        socket.on('radio:play', (data) => {
+            console.log('Play reçu:', data);
+            playTrack(data.track, data.startTime, data.timestamp);
+        });
+
+        socket.on('radio:pause', (data) => {
+            console.log('Pause reçu:', data);
+            pauseTrack();
+        });
+
+        socket.on('radio:stop', (data) => {
+            console.log('Stop reçu:', data);
+            stopTrack();
+        });
+
+        socket.on('radio:seek', (data) => {
+            console.log('Seek reçu:', data);
+            seekToTime(data.time, data.timestamp);
+        });
+
+        socket.on('radio:volume', (data) => {
+            console.log('Volume reçu:', data);
+            // Ne pas changer le volume local de l'utilisateur
+            // Juste pour info que le DJ a changé le volume général
+        });
+
+        // Fonctions audio
+        function playTrack(track, startTime, timestamp) {
+            if (!track) return;
+
+            // Calculer le décalage de synchronisation
+            const networkDelay = Date.now() - timestamp;
+            const actualStartTime = startTime + (networkDelay / 1000);
+
+            // Charger la piste audio
+            audioPlayer.src = `/music/${encodeURIComponent(track.filename)}`;
+            audioPlayer.currentTime = actualStartTime;
+            audioPlayer.volume = localVolume;
+
+            // Mettre à jour l'affichage
+            currentState = {
+                ...currentState,
+                currentTrack: track,
+                isPlaying: true,
+                currentTime: actualStartTime
+            };
+
+            updateDisplay();
+            updateStatus('playing', '🎵 En cours de lecture');
+
+            // Jouer l'audio
+            audioPlayer.play().catch(error => {
+                console.error('Erreur lecture audio:', error);
+                updateStatus('error', '❌ Erreur de lecture');
+            });
+
+            startSyncCheck();
+        }
+
+        function pauseTrack() {
+            audioPlayer.pause();
+            if (currentState) {
+                currentState.isPlaying = false;
+            }
+            updateStatus('paused', '⏸️ En pause');
+            stopSyncCheck();
+        }
+
+        function stopTrack() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            if (currentState) {
+                currentState.isPlaying = false;
+                currentState.currentTrack = null;
+                currentState.currentTime = 0;
+            }
+            updateDisplay();
+            updateStatus('connected', '🟢 Connecté - En attente');
+            stopSyncCheck();
+        }
+
+        function seekToTime(time, timestamp) {
+            if (!audioPlayer.src) return;
+
+            const networkDelay = Date.now() - timestamp;
+            const actualTime = time + (networkDelay / 1000);
+            
+            audioPlayer.currentTime = actualTime;
+            if (currentState) {
+                currentState.currentTime = actualTime;
+            }
+        }
+
+        // Synchronisation périodique
+        function startSyncCheck() {
+            stopSyncCheck();
+            syncInterval = setInterval(() => {
+                if (currentState && currentState.isPlaying && audioPlayer.src) {
+                    // Vérifier si on est encore synchronisé
+                    const expectedTime = currentState.currentTime + (Date.now() - currentState.lastUpdate) / 1000;
+                    const actualTime = audioPlayer.currentTime;
+                    const drift = Math.abs(expectedTime - actualTime);
+
+                    // Si le décalage est trop important, resynchroniser
+                    if (drift > 1) {
+                        console.log(`Resynchronisation: drift de ${drift.toFixed(2)}s`);
+                        audioPlayer.currentTime = expectedTime;
+                    }
+
+                    updateProgress();
+                }
+            }, 1000);
+        }
+
+        function stopSyncCheck() {
+            if (syncInterval) {
+                clearInterval(syncInterval);
+                syncInterval = null;
+            }
+        }
+
+        // Mise à jour de l'affichage
+        function updateDisplay() {
+            if (!currentState || !currentState.currentTrack) {
+                trackDisplay.classList.remove('visible');
+                noTrack.style.display = 'block';
+                progressContainer.style.display = 'none';
+                return;
+            }
+
+            const track = currentState.currentTrack;
+            
+            trackImage.src = track.image;
+            trackTitle.textContent = track.title;
+            trackArtist.textContent = track.artist;
+            trackGenre.textContent = track.genre;
+            
+            // Afficher les tags
+            trackTags.innerHTML = track.tags.map(tag => 
+                `<span class="tag">${tag}</span>`
+            ).join('');
+
+            trackDisplay.classList.add('visible');
+            noTrack.style.display = 'none';
+            progressContainer.style.display = 'block';
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            if (!audioPlayer.src || !audioPlayer.duration) return;
+
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = Math.min(progress, 100) + '%';
+            
+            currentTime.textContent = formatTime(audioPlayer.currentTime);
+        }
+
+        function updateStatus(type, message) {
+            statusIndicator.className = `status-indicator ${type}`;
+            statusText.textContent = message;
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Contrôle du volume local
+        volumeSlider.addEventListener('input', (e) => {
+            localVolume = e.target.value / 100;
+            audioPlayer.volume = localVolume;
+            volumeValue.textContent = e.target.value + '%';
+        });
+
+        // Mise à jour du temps en temps réel
+        audioPlayer.addEventListener('timeupdate', updateProgress);
+        
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            document.getElementById('totalTime').textContent = formatTime(audioPlayer.duration);
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            updateStatus('connected', '🟢 Morceau terminé');
+        });
+
+        audioPlayer.addEventListener('error', (e) => {
+            console.error('Erreur audio:', e);
+            updateStatus('error', '❌ Erreur de lecture');
+        });
+
+        // Charger l'état initial
+        async function loadInitialState() {
+            try {
+                const response = await fetch('/api/state');
+                const state = await response.json();
+                console.log('État initial:', state);
+                
+                if (state.currentTrack && state.isPlaying) {
+                    // Rejoindre la lecture en cours
+                    playTrack(state.currentTrack, state.currentTime, Date.now());
+                } else {
+                    currentState = state;
+                    updateDisplay();
+                    updateStatus('connected', '🟢 Connecté - En attente');
+                }
+            } catch (error) {
+                console.error('Erreur chargement état:', error);
+                updateStatus('error', '❌ Erreur de connexion');
+            }
+        }
+
+        // Initialisation
+        updateStatus('connecting', '🔄 Connexion...');
+        loadInitialState();
+    </script>
+</body>
+</html>
