@@ -452,7 +452,8 @@
                 ...currentState,
                 currentTrack: track,
                 isPlaying: true,
-                currentTime: actualStartTime
+                currentTime: actualStartTime,
+                lastUpdate: Date.now()
             };
 
             updateDisplay();
@@ -495,6 +496,7 @@
                 currentState.isPlaying = false;
                 currentState.currentTrack = null;
                 currentState.currentTime = 0;
+                currentState.lastUpdate = Date.now();
             }
             updateDisplay();
             updateStatus('connected', '🟢 Connecté - En attente');
@@ -510,6 +512,7 @@
             audioPlayer.currentTime = actualTime;
             if (currentState) {
                 currentState.currentTime = actualTime;
+                currentState.lastUpdate = Date.now();
             }
         }
 
@@ -551,12 +554,12 @@
             }
 
             const track = currentState.currentTrack;
-            
+
             trackImage.src = track.image;
             trackTitle.textContent = track.title;
             trackArtist.textContent = track.artist;
             trackGenre.textContent = track.genre;
-            
+
             // Afficher les tags
             trackTags.innerHTML = track.tags.map(tag => 
                 `<span class="tag">${tag}</span>`
@@ -566,6 +569,7 @@
             noTrack.style.display = 'none';
             progressContainer.style.display = 'block';
 
+            // updateDisplay ne doit JAMAIS appeler playTrack (évite les boucles infinies)
             updateProgress();
         }
 

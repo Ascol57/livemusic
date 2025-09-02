@@ -1,4 +1,5 @@
-[  {
+[
+  {
     "id": "berlin-dream",
     "title": "Berlin Dream",
     "artist": "housefrau.me",
@@ -8,8 +9,12 @@
     "source": "https://www.unminus.com",
     "genre": "Calm",
     "description": "Une mélodie électronique inspirée de Berlin",
-    "tags": ["Lounge", "Chill"]
-  },  {
+    "tags": [
+      "Lounge",
+      "Chill"
+    ]
+  },
+  {
     "id": "open-minded",
     "title": "Open Minded",
     "artist": "Kit Wheston",
@@ -19,8 +24,13 @@
     "source": "https://www.unminus.com",
     "genre": "Calm",
     "description": "Un morceau indie ouvert d'esprit",
-    "tags": ["Lo-Fi", "Chill", "Melancholy"]
-  },  {
+    "tags": [
+      "Lo-Fi",
+      "Chill",
+      "Melancholy"
+    ]
+  },
+  {
     "id": "tea-coldise",
     "title": "Tea",
     "artist": "Coldise",
@@ -30,8 +40,12 @@
     "source": "https://www.unminus.com",
     "genre": "Chill",
     "description": "Une ambiance relaxante comme un thé chaud",
-    "tags": ["Chill", "Lo-Fi"]
-  },  {
+    "tags": [
+      "Chill",
+      "Lo-Fi"
+    ]
+  },
+  {
     "id": "they-say",
     "title": "They Say",
     "artist": "Pipo & Wowa",
@@ -41,6 +55,206 @@
     "source": "https://www.unminus.com",
     "genre": "Calm",
     "description": "Un titre pop moderne et accrocheur",
-    "tags": ["Guitar", "Relax", "Chill"]
+    "tags": [
+      "Guitar",
+      "Relax",
+      "Chill"
+    ]
+  },
+  {
+    "id": "vibing-over-venus",
+    "title": "Vibing Over Venus",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Vibing Over Venus.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Vibing Over Venus par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "evening",
+    "title": "Evening",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Evening.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Evening par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "grand-dark-waltz-trio",
+    "title": "Grand Dark Waltz Trio",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Grand Dark Waltz Trio Vivace.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Grand Dark Waltz Trio Vivace par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "canon-in-d-interstellar-mix",
+    "title": "Canon In D Interstellar Mix",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Canon In D Interstellar Mix.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Canon In D Interstellar Mix par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "a-very-brady-special",
+    "title": "A Very Brady Special",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "A Very Brady Special.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "A Very Brady Special par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "del-rio-bravo",
+    "title": "Del Rio Bravo",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Del Rio Bravo.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Del Rio Bravo par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "wholesome",
+    "title": "Wholesome",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Wholesome.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Wholesome par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "stay-the-course",
+    "title": "Stay the Course",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Stay the Course.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Stay the Course par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "envision",
+    "title": "Envision",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Envision.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Envision par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "cloud-dancer",
+    "title": "Cloud Dancer",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Cloud Dancer.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Cloud Dancer par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "adventures-in-adventureland",
+    "title": "Adventures in Adventureland",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Adventures in Adventureland.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Adventures in Adventureland par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "still-pickin",
+    "title": "Still Pickin",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Still Pickin.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Still Pickin par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "onion-capers",
+    "title": "Onion Capers",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Onion Capers.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Onion Capers par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
+  },
+  {
+    "id": "almost-new",
+    "title": "Almost New",
+    "artist": "Kevin MacLeod (incompetech.com)",
+    "filename": "Almost New.mp3",
+    "duration": null,
+    "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop",
+    "source": "",
+    "genre": "Calm",
+    "description": "Almost New par Kevin MacLeod (incompetech.com)",
+    "tags": [
+      "calm"
+    ]
   }
 ]

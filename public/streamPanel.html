@@ -109,38 +109,8 @@
             width: 0%;
         }
 
-        .time-display {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.9em;
-            opacity: 0.7;
-        }
-
         .status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-        }
-
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #4CAF50;
-            animation: pulse 2s infinite;
-        }
-
-        .status-indicator.disconnected {
-            background: #f44336;
-            animation: none;
-        }        .status-indicator.paused {
-            background: #ff9800;
-            animation: none;
+            display: none;
         }
 
         .listener-count {
@@ -168,28 +138,7 @@
 
         .volume-control {
             margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .volume-slider {
-            flex: 1;
-            height: 4px;
-            border-radius: 2px;
-            background: rgba(255,255,255,0.3);
-            outline: none;
-            appearance: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: none;
         }
 
         .tags {
@@ -305,21 +254,19 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div class="time-display">
-                <span id="currentTime">0:00</span>
-                <span id="totalTime">3:00</span>
-            </div>
         </div>
 
         <!-- Audio element pour la lecture -->
         <audio id="audioPlayer" style="display: none;"></audio>
-    </div>    <script src="/socket.io/socket.io.js"></script>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         let currentState = null;
         let audioPlayer = document.getElementById('audioPlayer');
         let syncInterval = null;
-        let localVolume = 1.0;
+        let localVolume = 1;
         let audioEnabled = false;
         let pendingPlay = null;
 
@@ -330,41 +277,37 @@
         const trackTitle = document.getElementById('trackTitle');
         const trackArtist = document.getElementById('trackArtist');
         const trackGenre = document.getElementById('trackGenre');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
         const userInteractionRequired = document.getElementById('userInteractionRequired');
+        const statusMessage = document.getElementById('statusMessage');
 
         // Fonction pour activer l'audio après interaction utilisateur
         window.enableAudio = async function() {
             try {
                 statusMessage.textContent = "Activation de l'audio...";
                 statusMessage.style.display = "block";
-                
-                // Créer un contexte audio silencieux pour débloquer les restrictions
+
                 audioPlayer.volume = 0;
-                audioPlayer.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTS21/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTS21/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBTiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvGIcBQ==';
-                
+                audioPlayer.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQQAAAAAAA==';
+
                 await audioPlayer.play();
                 audioPlayer.pause();
                 audioPlayer.volume = localVolume;
-                
+
                 audioEnabled = true;
                 userInteractionRequired.style.display = 'none';
-                
-                // Si il y a une lecture en attente, la démarrer
+
                 if (pendingPlay) {
                     playTrack(pendingPlay.track, pendingPlay.startTime, pendingPlay.timestamp);
                     pendingPlay = null;
                 }
-                
-                console.log('Audio activé avec succès');
             } catch (error) {
                 console.error('Erreur activation audio:', error);
                 statusMessage.textContent = "Erreur lors de l'activation. Réessayez...";
-                statusMessage.style.backgroundColor = "rgba(244,67,54,0.2)";
-                statusMessage.style.borderColor = "rgba(244,67,54,0.5)";
             }
         };
 
-        // Connexion WebSocket
         socket.on('connect', () => {
             console.log('Connecté au serveur radio');
         });
@@ -373,77 +316,56 @@
             console.log('Déconnecté du serveur');
         });
 
-
-        // Synchronisation de l'état
         socket.on('radio:sync', (state) => {
-            console.log('Synchronisation reçue:', state);
             currentState = state;
             updateDisplay();
         });
 
-        // Événements radio
         socket.on('radio:play', (data) => {
-            console.log('Play reçu:', data);
             playTrack(data.track, data.startTime, data.timestamp);
         });
 
-        socket.on('radio:pause', (data) => {
-            console.log('Pause reçu:', data);
+        socket.on('radio:pause', () => {
             pauseTrack();
         });
 
-        socket.on('radio:stop', (data) => {
-            console.log('Stop reçu:', data);
+        socket.on('radio:stop', () => {
             stopTrack();
         });
 
         socket.on('radio:seek', (data) => {
-            console.log('Seek reçu:', data);
             seekToTime(data.time, data.timestamp);
         });
 
-        socket.on('radio:volume', (data) => {
-            console.log('Volume reçu:', data);
-            // Ne pas changer le volume local de l'utilisateur
-            // Juste pour info que le DJ a changé le volume général
-        });        // Fonctions audio
         function playTrack(track, startTime, timestamp) {
             if (!track) return;
 
-            // Si l'audio n'est pas encore activé, stocker la demande de lecture
             if (!audioEnabled) {
                 pendingPlay = { track, startTime, timestamp };
-                console.log('Audio non activé, lecture en attente...');
                 return;
             }
 
-            // Calculer le décalage de synchronisation
             const networkDelay = Date.now() - timestamp;
             const actualStartTime = startTime + (networkDelay / 1000);
 
-            // Charger la piste audio
             audioPlayer.src = `/music/${encodeURIComponent(track.filename)}`;
             audioPlayer.currentTime = actualStartTime;
             audioPlayer.volume = localVolume;
 
-            // Mettre à jour l'affichage
             currentState = {
                 ...currentState,
                 currentTrack: track,
                 isPlaying: true,
-                currentTime: actualStartTime
+                currentTime: actualStartTime,
+                lastUpdate: Date.now()
             };
 
             updateDisplay();
 
-            // Jouer l'audio avec gestion d'erreur améliorée
             audioPlayer.play().then(() => {
-                console.log('Lecture audio démarrée avec succès');
                 startSyncCheck();
             }).catch(error => {
                 console.error('Erreur lecture audio:', error);
-                
-                // Si c'est encore un problème d'interaction utilisateur
                 if (error.name === 'NotAllowedError') {
                     audioEnabled = false;
                     pendingPlay = { track, startTime, timestamp };
@@ -459,7 +381,6 @@
             if (currentState) {
                 currentState.isPlaying = false;
             }
-            stopSyncCheck();
         }
 
         function stopTrack() {
@@ -469,6 +390,7 @@
                 currentState.isPlaying = false;
                 currentState.currentTrack = null;
                 currentState.currentTime = 0;
+                currentState.lastUpdate = Date.now();
             }
             updateDisplay();
             stopSyncCheck();
@@ -479,28 +401,27 @@
 
             const networkDelay = Date.now() - timestamp;
             const actualTime = time + (networkDelay / 1000);
-            
+
             audioPlayer.currentTime = actualTime;
             if (currentState) {
                 currentState.currentTime = actualTime;
+                currentState.lastUpdate = Date.now();
             }
         }
 
-        // Synchronisation périodique
         function startSyncCheck() {
             stopSyncCheck();
             syncInterval = setInterval(() => {
                 if (currentState && currentState.isPlaying && audioPlayer.src) {
-                    // Vérifier si on est encore synchronisé
                     const expectedTime = currentState.currentTime + (Date.now() - currentState.lastUpdate) / 1000;
                     const actualTime = audioPlayer.currentTime;
                     const drift = Math.abs(expectedTime - actualTime);
 
-                    // Si le décalage est trop important, resynchroniser
                     if (drift > 1) {
-                        console.log(`Resynchronisation: drift de ${drift.toFixed(2)}s`);
                         audioPlayer.currentTime = expectedTime;
                     }
+
+                    updateProgress();
                 }
             }, 1000);
         }
@@ -512,16 +433,16 @@
             }
         }
 
-        // Mise à jour de l'affichage
         function updateDisplay() {
             if (!currentState || !currentState.currentTrack) {
                 trackDisplay.classList.remove('visible');
                 noTrack.style.display = 'block';
+                progressContainer.style.display = 'none';
                 return;
             }
 
             const track = currentState.currentTrack;
-            
+
             trackImage.src = track.image;
             trackTitle.textContent = track.title;
             trackArtist.textContent = track.artist;
@@ -529,48 +450,17 @@
 
             trackDisplay.classList.add('visible');
             noTrack.style.display = 'none';
+            progressContainer.style.display = 'block';
+
+            updateProgress();
         }
 
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-        
-        audioPlayer.addEventListener('loadedmetadata', () => {
-            document.getElementById('totalTime').textContent = formatTime(audioPlayer.duration);
-        });        // Charger l'état initial
-        async function loadInitialState() {
-            try {
-                const response = await fetch('/api/state');
-                const state = await response.json();
-                console.log('État initial:', state);
-                
-                currentState = state;
-                
-                if (state.currentTrack && state.isPlaying) {
-                    // Si la musique joue déjà, préparer la lecture mais attendre l'interaction utilisateur
-                    if (!audioEnabled) {
-                        pendingPlay = {
-                            track: state.currentTrack,
-                            startTime: state.currentTime,
-                            timestamp: Date.now()
-                        };
-                        console.log('Musique en cours détectée, en attente d\'interaction utilisateur');
-                    } else {
-                        // Rejoindre la lecture en cours
-                        playTrack(state.currentTrack, state.currentTime, Date.now());
-                    }
-                }
-                
-                updateDisplay();
-            } catch (error) {
-                console.error('Erreur chargement état:', error);
-            }
-        }
+        function updateProgress() {
+            if (!audioPlayer.src || !audioPlayer.duration) return;
 
-        // Initialisation
-        loadInitialState();
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = Math.min(progress, 100) + '%';
+        }
     </script>
 </body>
 </html>
