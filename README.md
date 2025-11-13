@@ -4,15 +4,15 @@
 
 > Un système de radio synchronisée permettant à un DJ de contrôler la musique pour tous les auditeurs connectés en temps réel.
 
------
+---
 
-\<p align="center"\>
-\<strong\>\<a href="\#-english"\>English\</a\>\</strong\>
-\&nbsp;\&nbsp;\&bull;\&nbsp;\&nbsp;
-\<strong\>\<a href="\#-français"\>Français\</a\>\</strong\>
-\</p\>
+<p align="center">
+  <strong><a href="#-english">English</a></strong>
+  &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+  <strong><a href="#-français">Français</a></strong>
+</p>
 
------
+---
 
 ## 🇬🇧 English
 
